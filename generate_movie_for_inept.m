@@ -3,7 +3,7 @@ every_pt=500;
 %every_pt=2500;% this is to speed up generation
 
 for loop_j=0
-    for mainlooop=0:3
+    for mainlooop=0:5
         
         if  mainlooop==0
             text_title='Pulse Evolution PI(y) inv(J) Evolution (no chemical shift evolution)';
@@ -23,6 +23,16 @@ for loop_j=0
         if  mainlooop==3
             text_title='Pulse Evolution PI(x) inv(J) Evolution ';
             writerObj = VideoWriter(['Spin_echo_for_INEPT_PIx_chem_shift_evol.avi']);
+            
+        end
+          if  mainlooop==4
+            text_title='Pulse Evolution PI(y) inv(J) Evolution (imperfect tau value)';
+            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIy_chem_shift_evol_imperfect_tau.avi']);
+            
+        end
+        if  mainlooop==5
+            text_title='Pulse Evolution PI(x) inv(J) Evolution (imperfect tau value)';
+            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIx_chem_shift_evol_imperfect_tau.avi']);
             
         end
         % for mainlooop=-3
@@ -71,7 +81,9 @@ for loop_j=0
         end
         J=0.2*2*pi;%pefect refocus...
         J=1;%pefect refocus...
-        
+        if mainlooop>=4
+            J=1.1;
+        end
         
         larmo=[center ]+[-J/2 J/2];
         
@@ -142,7 +154,7 @@ for loop_j=0
             if before_180
                 if t>tmax/2
                     % apply pi pulse
-                    if (mainlooop ==1) || (mainlooop ==3)
+                    if (mainlooop ==1) || (mainlooop ==3) || (mainlooop ==5)
                         pos_mag(:,1)=-pos_mag(:,1);before_180=0;
                     else
                         pos_mag(:,2)=-pos_mag(:,2);before_180=0;
