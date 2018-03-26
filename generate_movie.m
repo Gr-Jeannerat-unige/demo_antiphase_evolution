@@ -1,13 +1,12 @@
 clear all
-%for main_ratio=[ 0.01 1 0.5 0.2 0.1],
-%for mainlooop=0:6
-for loop_j=1
-for mainlooop=0:4
+for loop_j=0:1
+for mainlooop=0:5
     if  mainlooop==0 text_title='Pulse Evolution (no chem. shift evolution)';end
     if  mainlooop==1 text_title='Pulse Evolution';end
     if  mainlooop==2 text_title='Pulse Evolution PI(x) Evolution';end
     if  mainlooop==3 text_title='Pulse Evolution PI(y) Evolution';end
     if  mainlooop==4 text_title='Pulse Evolution PI(y) inv(J) Evolution ';end
+    if  mainlooop==5 text_title='Pulse Evolution PI(x) inv(J) Evolution ';end
     % for mainlooop=-3
     clear stor_tr
     clear stor_tr_crude
@@ -132,12 +131,12 @@ for mainlooop=0:4
             if before_180
                 if t>tmax/2
                     % apply pi pulse
-                    if mainlooop<3
+                    if mainlooop<3 || mainlooop>4
                         pos_mag(:,1)=-pos_mag(:,1);before_180=0;
                     else
                         pos_mag(:,2)=-pos_mag(:,2);before_180=0;
                     end
-                    if mainlooop==4
+                    if mainlooop>=4
                         J=-J;
                         larmo=[center ]+[-J/2 J/2];
                     end
