@@ -1,40 +1,48 @@
 clear all
 every_pt=500;
 %every_pt=2500;% this is to speed up generation
-
+for center_antiphase_arrow=[0 1]
 for loop_j=0
-    for mainlooop=0:5
+    for mainlooop=0:6
         
         if  mainlooop==0
             text_title='Pulse Evolution PI(y) inv(J) Evolution (no chemical shift evolution)';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIy_NO_chem_shift_evol.avi']);
+            file_name=['Spin_echo_for_INEPT_PIy_NO_chem_shift_evol.avi'];
             
         end
         if  mainlooop==1
             text_title='Pulse Evolution PI(x) inv(J) Evolution (no chemical shift evolution)';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIx_NO_chem_shift_evol.avi']);
+            file_name=['Spin_echo_for_INEPT_PIx_NO_chem_shift_evol.avi'];
             
         end
         if  mainlooop==2
             text_title='Pulse Evolution PI(y) inv(J) Evolution ';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIy_chem_shift_evol.avi']);
+            file_name=['Spin_echo_for_INEPT_PIy_chem_shift_evol.avi'];
             
         end
         if  mainlooop==3
             text_title='Pulse Evolution PI(x) inv(J) Evolution ';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIx_chem_shift_evol.avi']);
+            file_name=['Spin_echo_for_INEPT_PIx_chem_shift_evol.avi'];
             
         end
-          if  mainlooop==4
+        if  mainlooop==4
             text_title='Pulse Evolution PI(y) inv(J) Evolution (imperfect tau value)';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIy_chem_shift_evol_imperfect_tau.avi']);
+            file_name=['Spin_echo_for_INEPT_PIy_chem_shift_evol_imperfect_tau.avi'];
             
         end
         if  mainlooop==5
             text_title='Pulse Evolution PI(x) inv(J) Evolution (imperfect tau value)';
-            writerObj = VideoWriter(['Spin_echo_for_INEPT_PIx_chem_shift_evol_imperfect_tau.avi']);
+            file_name=['Spin_echo_for_INEPT_PIx_chem_shift_evol_imperfect_tau.avi'];
             
         end
+        if every_pt==2500
+            file_name=['delete_quick_' file_name];
+        end
+         if center_antiphase_arrow
+            file_name=['Centered_antiphase_arrow_' file_name];
+        end
+        writerObj = VideoWriter([file_name]);
+        
         % for mainlooop=-3
         clear stor_tr
         clear stor_tr_crude
@@ -73,7 +81,9 @@ for loop_j=0
         disp(['pulse amplitude : ' num2str(ampli_hz) ' Hz'])
         loop_offset=0+000*1000;
         start_pt=[0 -1 0];
-        tmax=0.1;
+        evol_time=0.1;
+        pulse_time=0.04;
+        tmax=evol_time+pulse_time;
         center=10.123421;
         center=0;
         if mainlooop>1
@@ -93,7 +103,7 @@ for loop_j=0
         firstr1=0;
         tau=10;%(defaul no second pulse
         
-        rf=0.0000000;
+        
         % if mod(round(t*20),6)==0
         R2=0;
         R1=0;
@@ -107,13 +117,33 @@ for loop_j=0
             
             increment_tilt=pi/100000;
             inc=0;
-            
+            if (t>evol_time/2) && (t<(evol_time/2+pulse_time))
+                % apply pi pulse
+                if (mainlooop ==1) || (mainlooop ==3) || (mainlooop ==5)
+                    %        pos_mag(:,1)=-pos_mag(:,1);before_180=0;
+                    rfy=5/(pulse_time/0.02);
+                rfx=0.0000000;
+                else
+                    %       pos_mag(:,2)=-pos_mag(:,2);before_180=0;
+                    rfx=5/(pulse_time/0.02);
+                rfy=0.0000000;
+                end
+                
+                allow_evol=0;
+                
+            else
+                rfx=0.0000000;
+                
+                rfy=0.0000000;
+                allow_evol=1;
+            end
+           
             %  tilt_angle=atan((ampli_hz/loop_offset));
             
             %  if tilt_angle<0, tilt_angle=tilt_angle+pi;end
             
             for loop=1:size(larmo,2)
-                v=[rf 0 larmo(1,loop) ];
+                v=[rfx rfy allow_evol*larmo(1,loop) ];
                 di=cross(v,pos_mag(loop,:));
                 pos_mag(loop,:)=pos_mag(loop,:)+di*increment_tilt;
                 
@@ -132,7 +162,7 @@ for loop_j=0
                 diff=diff*((exp(-R1*increment_tilt)));
                 pos_mag(1,3)=1-diff;
             end
-            
+            rf=rfx+rfy;
             nu_eff=sqrt(loop_offset*loop_offset+ampli_hz*ampli_hz);
             
             %
@@ -151,33 +181,35 @@ for loop_j=0
             %    figure('Units','inches', 'PaperPositionMode','auto', 'Position',[0 0 4 4]);
             
             
+            
+            % end
             if before_180
-                if t>tmax/2
-                    % apply pi pulse
-                    if (mainlooop ==1) || (mainlooop ==3) || (mainlooop ==5)
-                        pos_mag(:,1)=-pos_mag(:,1);before_180=0;
-                    else
-                        pos_mag(:,2)=-pos_mag(:,2);before_180=0;
-                    end
-                    %if mainlooop>=4
+                if (t>evol_time/2)
+                    before_180=0;
+                    
                     J=-J;
                     larmo=[center ]+[-J/2 J/2];
-                    % end
-                    
                 end
+                
             end
-            
+            % end
             
             
             %work on figure
             if mod(round(t*1e6),every_pt)==0
+                
+                
+                
                 where_low=-3;
                 disp(['time: ' num2str(t) '/' max(num2str(tmax)) ' ' num2str(rf)] )
                 cur_f=figure(1);clf;hold on
+                
                 % black arrow
+                how_much_higher=-2.2;
                 for loop=1:size(larmo,2)
                     
-                    fig_gen_spheres(pos_mag(loop,:))
+                    fig_gen_spheres(pos_mag(loop,:),[51 31],'k',0)
+                    fig_gen_spheres(pos_mag(loop,:),[51 31],'k',how_much_higher)
                 end
                 %midd arro
                 [v1 v2]=view();
@@ -190,12 +222,45 @@ for loop_j=0
                 else
                     plot3( [0 cen_vect(:,1)],[0 cen_vect(:,2)],[ 0 cen_vect(:,3)],color_inphase,'LineWidth',2)
                 end
+                %in first sphere
                 if sum(sum(((pos_mag(1,:)-cen_vect).*(pos_mag(1,:)-cen_vect))))>(mi_dist/2)*(mi_dist/2)
-                    fig_gen_spheres([  pos_mag(1,:);cen_vect],[v1 v2],color_antiphase)
-                    fig_gen_spheres([  pos_mag(2,:);cen_vect],[v1 v2],color_antiphase)
+                    %at end...
+                    %    fig_gen_spheres([  pos_mag(1,:);cen_vect],[v1 v2],color_antiphase)
+                    %    fig_gen_spheres([  pos_mag(2,:);cen_vect],[v1 v2],color_antiphase)
+                    %centered
+                    fig_gen_spheres([  pos_mag(1,:);cen_vect]-cen_vect*center_antiphase_arrow,[v1 v2],color_antiphase)
+                    fig_gen_spheres([  pos_mag(2,:);cen_vect]-cen_vect*center_antiphase_arrow,[v1 v2],color_antiphase)
                 else
                     plot3( pos_mag(:,1),pos_mag(:,2),pos_mag(:,3),color_antiphase,'LineWidth',2)
                 end
+                 %in first sphere
+                if sum(sum(((pos_mag(1,:)-cen_vect).*(pos_mag(1,:)-cen_vect))))>(mi_dist/2)*(mi_dist/2)
+                    %at end...
+                    %    fig_gen_spheres([  pos_mag(1,:);cen_vect],[v1 v2],color_antiphase)
+                    %    fig_gen_spheres([  pos_mag(2,:);cen_vect],[v1 v2],color_antiphase)
+                    %centered
+                    fig_gen_spheres([  pos_mag(1,:);cen_vect]-cen_vect*center_antiphase_arrow,[v1 v2],color_antiphase)
+                    fig_gen_spheres([  pos_mag(2,:);cen_vect]-cen_vect*center_antiphase_arrow,[v1 v2],color_antiphase)
+                else
+                    plot3( pos_mag(:,1),pos_mag(:,2),pos_mag(:,3),color_antiphase,'LineWidth',2)
+                end
+                
+                 %on second sphere
+                 pos_mag_other=pos_mag;
+                 pos_mag_other(:,3)=sqrt(power(pos_mag_other(:,1)-cen_vect(1,1),2)+power(pos_mag_other(:,2)-cen_vect(1,2),2)+power(pos_mag_other(:,3)-cen_vect(1,3),2));
+                 pos_mag_other(:,2)=0*pos_mag_other(:,3);
+                 pos_mag_other(:,1)=0*pos_mag_other(:,3);
+                if sum(sum(((pos_mag(1,:)-cen_vect).*(pos_mag(1,:)-cen_vect))))>(mi_dist/2)*(mi_dist/2)
+                    %at end...
+                    %    fig_gen_spheres([  pos_mag(1,:);cen_vect],[v1 v2],color_antiphase)
+                    %    fig_gen_spheres([  pos_mag(2,:);cen_vect],[v1 v2],color_antiphase)
+                    %centered
+                    fig_gen_spheres([  pos_mag_other(1,:);[0 0 0]]+[0 0 how_much_higher],[v1 v2],color_antiphase)
+                    fig_gen_spheres([  -pos_mag_other(1,:);[0 0 0]]+[0 0 how_much_higher],[v1 v2],color_antiphase)
+                else
+                    plot3( pos_mag_other(:,1),pos_mag_other(:,2),pos_mag_other(:,3)+[ how_much_higher],color_antiphase,'LineWidth',2)
+                end
+                
                 
                 
                 % store last point for full trajectory plot
@@ -209,16 +274,26 @@ for loop_j=0
                 
                 % plot3(stor_tr(:,1),stor_tr(:,2),stor_tr(:,3),'k-','linewidth',1.25)
                 
-                plot3( [0.5 0.5],[-1 1],[where_low where_low],'k-')
-                plot3(-[0.5 0.5],[-1 1],[where_low where_low],'k-')
-                plot3(-[0.0 0.0],[-1 1],[where_low where_low],'k:')
-                plot3(+[1 1],[-1 1],[where_low where_low],'k:')
-                plot3([-1 1],[-1 -1],[where_low where_low],'k-')
-                plot3(-[1 1],[-1 1],[where_low where_low]+0.5,'k-')
-                plot3(-[1 1],[-1 1],[where_low where_low]+1,'k:')
-                plot3(-[1 1],[-1 1],[where_low where_low]+0,'k:')
-                plot3(-[1 1],[-1 -1],[0 1 ]+where_low,'k-')
-                
+%                 plot3( [0.5 0.5],[-1 1],[where_low where_low],'k-')
+%                 plot3(-[0.5 0.5],[-1 1],[where_low where_low],'k-')
+%                 plot3(-[0.0 0.0],[-1 1],[where_low where_low],'k:')
+%                 plot3(+[1 1],[-1 1],[where_low where_low],'k:')
+%                 plot3([-1 1],[-1 -1],[where_low where_low],'k-')
+%                 plot3(-[1 1],[-1 1],[where_low where_low]+0.5,'k-')
+%                 plot3(-[1 1],[-1 1],[where_low where_low]+1,'k:')
+%                 plot3(-[1 1],[-1 1],[where_low where_low]+0,'k:')
+%                 plot3(-[1 1],[-1 -1],[0 1 ]+where_low,'k-')
+%                 
+                rf_arrow=1.0;
+                if rfx>0
+                    plot3( [-rf_arrow rf_arrow],[0 0],[ 0 0],'c','LineWidth',2)
+                    text( [ rf_arrow]*1.1,[0 ],[  0],'Inversion pulse')
+                end
+                if rfy>0
+                    plot3( [0 0],[-rf_arrow rf_arrow],[ 0 0],'c','LineWidth',2)
+                     text([0 ], [ rf_arrow]*1.1,[  0],'Inversion pulse')
+
+                end
                 %   list_t=2*(t/tmax)*(1:size(stor_tr,1))/size(stor_tr,1)-1;
                 list_t=2*(t/tmax)*(stor_t)/max(abs(stor_t))-1;
                 %      plot3( 0.5+0.5*stor_tr(:,1),list_t,stor_tr(:,3)*0+where_low,'g-','linewidth',1.25)
@@ -233,7 +308,7 @@ for loop_j=0
                 %  [dist_in_hz erro_in_deg]=shap_fn3d(loopj-1,mainlooop,main_ratio);
                 
                 
-                axis([ -1     1    -1     1    where_low     1])
+                axis([ -1     1    -1     1    where_low-0.3     1])
                 %plot3(store_traj(:,1),store_traj(:,2),store_traj(:,3),'k-','linewidth',1.5)
                 %plot3(store_traj(:,1),store_traj(:,2),0*store_traj(:,3),'k-','linewidth',1)
                 axis off
@@ -267,4 +342,5 @@ for loop_j=0
         %     print('-depsc','-tiff','-r600',[ 'Phase_error_nearby_small_signals' num2str(main_ratio)  '.eps']);%here
         
     end
+end
 end
