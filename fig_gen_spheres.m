@@ -35,36 +35,41 @@ plot3([0 0],[-1 1],[0 0]+shift_in_z,'k-','color',[1 1 1]*0.5)
 plot3([-1 1],[0 0],[0 0]+shift_in_z,'k-','color',[1 1 1]*0.5)
 axis('equal')
 %disp(['offset_first_null : ' num2str(offsset_first_null) ' Hz ' ])
+
 if shift_in_z==0
-for loarrows=size(pos_mag,1)
     
-    
-    %plot field vector
-    
-    % if disp_on
-    % disp(['Offset : ' num2str(loop_offset) ' Hz w_eff=' num2str(nu_eff) ' Hz'])
-    
-    %   plot3([sin(tilt_angle)],[ 0],[ cos(tilt_angle)],'ko','MarkerSize',5)
-    
-    % end
-    
-    %%%%  plot3(stor_tr(:,1),stor_tr(:,2),stor_tr(:,3),'k:','linewidth',1.25)
-    
-    %  if disp_on,
-    % plot3([pos_mag_p(1,1) ],[pos_mag_p(1,2) ],[ pos_mag(1,3)],'ko')
-    % plot3([pos_mag_p(1,1) ],[pos_mag_p(1,2) ],[ pos_mag(1,3)],'k.','MarkerSize',12)
-    plot3([0 pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],[0 pos_mag(loarrows,3)]+shift_in_z)
-    plot3([0 pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],0*[0 pos_mag(loarrows,3)]+shift_in_z,'k:')
-    plot3(pos_mag(loarrows,1) *[1 1],pos_mag(loarrows,2)*[1 1 ],1*[0 pos_mag(loarrows,3)]+shift_in_z,'k:')
-  %  plot3([0 pos_mag(loarrows,1) ],[ pos_mag(loarrows,2) pos_mag(loarrows,2) ],0*[0 pos_mag(loarrows,3)],'g-')
-  %  plot3([pos_mag(loarrows,1) pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],0*[0 pos_mag(loarrows,3)],'b-')
-   % plot3([pos_mag(loarrows,1) pos_mag(loarrows,1) ],[pos_mag(loarrows,2) pos_mag(loarrows,2) ],[0 pos_mag(loarrows,3)],'r-')
-    arrow(pos_mag0,[pos_mag(loarrows,1)  pos_mag(loarrows,2)  pos_mag(loarrows,3)],'linewidth',1.5,'color',color_arrow)
-    %  end
-    drawnow
-    
-    % plot3([start_pt_p(1,1) start_pt(1,1)],[start_pt_p(1,2) start_pt(1,2)],[start_pt_p(1,3) start_pt(1,3)],'g-')
-    
-end
+    for loarrows=size(pos_mag,1)
+        zz=0;
+        if pos_mag(loarrows,3)<-1.2
+            zz=                   -2.2;
+        end
+        
+        %plot field vector
+        
+        % if disp_on
+        % disp(['Offset : ' num2str(loop_offset) ' Hz w_eff=' num2str(nu_eff) ' Hz'])
+        
+        %   plot3([sin(tilt_angle)],[ 0],[ cos(tilt_angle)],'ko','MarkerSize',5)
+        
+        % end
+        
+        %%%%  plot3(stor_tr(:,1),stor_tr(:,2),stor_tr(:,3),'k:','linewidth',1.25)
+        
+        %  if disp_on,
+        % plot3([pos_mag_p(1,1) ],[pos_mag_p(1,2) ],[ pos_mag(1,3)],'ko')
+        % plot3([pos_mag_p(1,1) ],[pos_mag_p(1,2) ],[ pos_mag(1,3)],'k.','MarkerSize',12)
+        %  plot3([0 pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],[0 pos_mag(loarrows,3)]+shift_in_z)
+        plot3([0 pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],zz+0*[zz pos_mag(loarrows,3)],'k:')
+        plot3(pos_mag(loarrows,1) *[1 1],pos_mag(loarrows,2)*[1 1 ],1*[zz pos_mag(loarrows,3)],'k:')
+        %  plot3([0 pos_mag(loarrows,1) ],[ pos_mag(loarrows,2) pos_mag(loarrows,2) ],0*[0 pos_mag(loarrows,3)],'g-')
+        %  plot3([pos_mag(loarrows,1) pos_mag(loarrows,1) ],[0 pos_mag(loarrows,2) ],0*[0 pos_mag(loarrows,3)],'b-')
+        % plot3([pos_mag(loarrows,1) pos_mag(loarrows,1) ],[pos_mag(loarrows,2) pos_mag(loarrows,2) ],[0 pos_mag(loarrows,3)],'r-')
+        arrow(pos_mag0,[pos_mag(loarrows,1)  pos_mag(loarrows,2)  pos_mag(loarrows,3)],'linewidth',1.5,'color',color_arrow)
+        %  end
+        drawnow
+        
+        % plot3([start_pt_p(1,1) start_pt(1,1)],[start_pt_p(1,2) start_pt(1,2)],[start_pt_p(1,3) start_pt(1,3)],'g-')
+        
+    end
 end
 end
