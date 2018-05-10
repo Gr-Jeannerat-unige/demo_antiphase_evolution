@@ -51,13 +51,13 @@ for center_antiphase_arrow=[0 1]
             main_ratio=90;
             
             figure(1)
-               [v1 v2]=view([-30 25]);
-                    v1=-30;
-                    v2=25;
-                       v1=-60;
-                    v2=25;
-                        view([v1 v2]);
-
+            [v1 v2]=view([-30 25]);
+            v1=-30;
+            v2=25;
+            v1=-60;
+            v2=25;
+            view([v1 v2]);
+            
             %  Z = peaks;
             %  surf(Z)
             %  axis tight manual
@@ -220,11 +220,11 @@ for center_antiphase_arrow=[0 1]
                         fig_gen_spheres(pos_mag(loop,:),[v1 v2],'k',how_much_higher)
                     end
                     %midd arro
-                 %   view
+                    %   view
                     
                     
-                   % [v1 v2]=view([50 30]);
-                 
+                    % [v1 v2]=view([50 30]);
+                    
                     cen_vect=pos_mag(1,:)*0.5+0.5*pos_mag(2,:);
                     color_inphase='g';
                     color_antiphase='r';
@@ -307,13 +307,13 @@ for center_antiphase_arrow=[0 1]
                     if rfx>0
                         plot3( [-rf_arrow rf_arrow],[0 0],[ 0 0],'c','LineWidth',2)
                         text( [- rf_arrow]*1.1,[0 ],[  0],'Inversion pulse')
-                         plot3( [-rf_arrow rf_arrow],[0 0],[ 0 0]+how_much_higher,'c','LineWidth',2)
+                        plot3( [-rf_arrow rf_arrow],[0 0],[ 0 0]+how_much_higher,'c','LineWidth',2)
                         text( [- rf_arrow]*1.1,[0 ],[  0]+how_much_higher,'Inversion pulse')
                     end
                     if rfy>0
                         plot3( [0 0],[-rf_arrow rf_arrow],[ 0 0],'c','LineWidth',2)
                         text([0 ], [ -rf_arrow]*1.1,[  0],'Inversion pulse')
-                           plot3( [0 0],[-rf_arrow rf_arrow],[ 0 0]+how_much_higher,'c','LineWidth',2)
+                        plot3( [0 0],[-rf_arrow rf_arrow],[ 0 0]+how_much_higher,'c','LineWidth',2)
                         text([0 ], [ -rf_arrow]*1.1,[  0]+how_much_higher,'Inversion pulse')
                         
                     end
@@ -338,6 +338,8 @@ for center_antiphase_arrow=[0 1]
                     
                     set(gcf,'color','w');
                     text(0,0,1.3,text_title,'HorizontalAlignment','center')
+                    draw_unit_circle([0;0;0])
+                    draw_unit_circle([0;0;how_much_higher])
                     
                     drawnow;
                     tmp_frame = getframe;
